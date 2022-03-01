@@ -15,7 +15,13 @@ const authUser = (req, res) => {
   res.status(200).json({ success: true, data: req.user });
 };
 
+const logout = (req, res) => {
+  req.logout();
+  res.status(200).json({ success: true, msg: 'logout successful' });
+};
+
 module.exports = {
   authUser,
   getUser,
+  logout,
 };

@@ -8,7 +8,7 @@ async function getCurrentUser(): Promise<GetCurrentUserResponse> {
   const authURL = '/auth/user';
 
   try {
-    const result = await axios.get(baseUrl + authURL, {
+    const result = await axios.get(`${baseUrl}${authURL}`, {
       withCredentials: true,
     });
     return result.data;
@@ -20,7 +20,7 @@ async function getCurrentUser(): Promise<GetCurrentUserResponse> {
 
 async function getUser(userId: string): Promise<GetUserResponse> {
   try {
-    const result = await axios.get(baseUrl + userId);
+    const result = await axios.get(`${baseUrl}/${userId}`);
     return result.data;
   } catch (error) {
     console.log(error);
@@ -28,4 +28,14 @@ async function getUser(userId: string): Promise<GetUserResponse> {
   }
 }
 
-export { getCurrentUser, getUser };
+async function logout() {
+  const logoutUrl = '/logout';
+  try {
+    await axios.get(`${baseUrl}${logoutUrl}`);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export { getCurrentUser, getUser, logout };
