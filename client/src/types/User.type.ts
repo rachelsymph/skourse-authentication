@@ -10,7 +10,7 @@ export type User = {
 
 export type GetUserResponse = {
   success: boolean;
-  data: User;
+  data: User | null;
 };
 
 export type GetCurrentUserResponse = {
@@ -24,4 +24,10 @@ export type UserContext = {
   error: string | null;
   fetchUser: () => void;
   setUser: Dispatch<SetStateAction<User | null>>;
+};
+
+export type AuthContextType = {
+  user: User;
+  signin: (callback: VoidFunction) => void;
+  signout: (callback: VoidFunction) => void;
 };

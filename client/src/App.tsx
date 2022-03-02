@@ -1,30 +1,41 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { RequireAuth } from './components/RequireAuth';
 import routes from './constants/routes';
-import { AccountContext } from './context/AccountContext';
-import useGetCurrentAccount from './hooks/useGetCurrentAccount';
 import ErrorLoginPage from './pages/ErrorLoginPage';
 import LoginPage from './pages/LoginPage';
 import LoginSuccess from './pages/LoginSuccess';
 import WelcomePage from './pages/WelcomePage';
+import { AuthProvider } from './provider/AuthProvider';
 
 function App() {
-  const { user, error, isLoading, fetchUser, setUser } = useGetCurrentAccount();
-  
   return (
-    <AccountContext.Provider
-      value={{ user, error, isLoading, fetchUser, setUser }}
-    >
+    <AuthProvider>
       <Router>
         <Routes>
           <Route path={routes.BASE} element={<>Hello World</>} />
           <Route path={routes.LOGIN} element={<LoginPage />} />
-          <Route path={routes.LOGIN_SUCCESS} element={<LoginSuccess />} />
-          <Route path={routes.WELCOME} element={<WelcomePage />} />
           <Route path={routes.LOGIN_ERROR} element={<ErrorLoginPage />} />
+          {/* Protected Routes */}
+          <Route
+            path={routes.LOGIN_SUCCESS}
+            element={
+              <RequireAuth>
+                <LoginSuccess />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routes.WELCOME}
+            element={
+              <RequireAuth>
+                <WelcomePage />
+              </RequireAuth>
+            }
+          />
         </Routes>
       </Router>
-    </AccountContext.Provider>
+    </AuthProvider>
   );
 }
 

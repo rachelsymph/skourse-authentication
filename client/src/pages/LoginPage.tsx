@@ -1,25 +1,24 @@
 import React, { useContext, useEffect } from 'react';
 import GoogleButton from 'react-google-button';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AccountContext } from '../context/AccountContext';
 import routes from '../constants/routes';
+import { useAuth } from '../hooks/useAuth';
+import { Input } from 'antd';
 
 type Props = {};
 
 export default function LoginPage(props: Props) {
   const navigate = useNavigate();
-  const { user, isLoading, fetchUser } = useContext(AccountContext);
+  const location: any = useLocation();
+  const auth = useAuth();
+  const from = location.state?.from?.pathname || '/';
 
-  useEffect(() => {
-    if (user) {
-      navigate(routes.WELCOME, { replace: true });
-    }
-  }, [navigate, user]);
-
-  const fetchAuthUser = async () => {
-    fetchUser();
-  };
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    redirectToGoogleSSO();
+  }
 
   const redirectToGoogleSSO = async () => {
     let timer: NodeJS.Timeout | null = null;
@@ -29,11 +28,13 @@ export default function LoginPage(props: Props) {
       '_blank',
       'width=500,height=600'
     );
-    await fetchAuthUser();
 
     if (newWindow) {
       timer = setInterval(async () => {
         if (newWindow.closed) {
+          auth.signin(() => {
+            navigate(from, { replace: true });
+          });
           console.log("Yay we're authenticated");
           if (timer) clearInterval(timer);
         }

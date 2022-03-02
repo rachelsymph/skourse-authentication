@@ -5,29 +5,25 @@ import styled from 'styled-components';
 import { logout } from '../api/AccountApi';
 import routes from '../constants/routes';
 import { AccountContext } from '../context/AccountContext';
+import { useAuth } from '../hooks/useAuth';
 
 type Props = {};
 
 export default function WelcomePage(props: Props) {
-  const { user, setUser } = useContext(AccountContext);
-  const navigate = useNavigate();
+  let auth = useAuth();
+  let navigate = useNavigate();
 
-  async function handleClickSignout() {
-    await logout();
-    setUser(null);
-    navigate(routes.LOGIN, { replace: true });
+  function handleClickSignout() {
+    auth.signout(() => navigate('/'));
   }
 
-  useEffect(() => {
-    if (!user) {
-      navigate(routes.LOGIN_ERROR, { replace: true });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  if (!auth.user) {
+    return <p>You are not logged in.</p>;
+  }
 
   return (
     <Container>
-      Welcome {user?.fullName}
+      <p>Welcome {auth.user.fullName}! </p>
       <Button onClick={handleClickSignout}>Logout</Button>
     </Container>
   );
